@@ -24,11 +24,7 @@ export default function EventCard({
   const esLibre = event.source === 'libre';
   const esSugerencia = event.source === 'sugerencia';
   const esRutina = event.source === 'rutina';
-  const horario = event.allDay
-    ? event.wholeDay
-      ? 'Todo el día'
-      : 'Todo el día'
-    : formatRange(event.startTime, event.endTime);
+  const horario = event.allDay ? 'Todo el día' : formatRange(event.startTime, event.endTime);
   const duracion = event.allDay ? '' : durationLabel(event.startTime, event.endTime);
   const contador = tasksCounterLabel(event.tasks);
 

@@ -225,7 +225,7 @@ export default function Agenda() {
       eventId: null,
       borrador: {
         title: sugerencia.title,
-        date: sugerencia.date || fechas.find((fecha) => (eventos[fecha] || []).length) || hoy,
+        date: sugerencia.date || hoy,
         start_time: sugerencia.startTime,
         end_time: sugerencia.endTime,
         location: sugerencia.location,

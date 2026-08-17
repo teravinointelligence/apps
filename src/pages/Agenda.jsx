@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { AlertTriangle, CheckCircle2, Info, X } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, HeartPulse, Info, X } from 'lucide-react';
 import { useAuth } from '@/lib/AuthContext';
 import ConfirmDialog from '@/components/agenda/ConfirmDialog';
 import DayCard from '@/components/agenda/DayCard';
 import Legend from '@/components/agenda/Legend';
+import MetasPanel from '@/components/agenda/MetasPanel';
+import RegistroSemana from '@/components/agenda/RegistroSemana';
 import ReviewModal from '@/components/agenda/ReviewModal';
 import TopPanel from '@/components/agenda/TopPanel';
 import WeekToolbar from '@/components/agenda/WeekToolbar';
@@ -25,6 +27,7 @@ import {
   roundTripContext,
   suggestedTransfers,
 } from '@/lib/agenda/preferences';
+import { criticalHoursInEvents, sittingAlerts, wellnessSuggestions } from '@/lib/agenda/bienestar';
 import { isWeatherTitle, parseWeather } from '@/lib/agenda/weather';
 import { useSpeechDictation } from '@/lib/agenda/useSpeech';
 import { addDays, minutesOfDay, startOfWeek, todayStr, weekDates } from '@/lib/agenda/time';
@@ -86,6 +89,7 @@ export default function Agenda() {
   const [ocupadoConfirm, setOcupadoConfirm] = useState(false);
   const [busyTaskKey, setBusyTaskKey] = useState(null);
   const [mensaje, setMensaje] = useState(null);
+  const [bienestar, setBienestar] = useState(true);
 
   const hoy = todayStr();
   const fechas = useMemo(() => weekDates(weekStart), [weekStart]);
@@ -153,9 +157,14 @@ export default function Agenda() {
     () =>
       fechas.map((fecha, indice) => {
         const confirmados = eventos[fecha] || [];
-        const sugerencias = suggestedTransfers(confirmados);
+        const sugerencias = [
+          ...suggestedTransfers(confirmados),
+          ...(bienestar ? wellnessSuggestions(fecha, confirmados) : []),
+        ];
         const conSugerencias = [...confirmados, ...sugerencias];
-        const libres = freeSlots(fecha, conSugerencias);
+        // Las sugerencias no ocupan el día: si no hay nada confirmado, el día
+        // sigue estando "Libre" aunque propongamos caminata o corte de pantalla.
+        const libres = freeSlots(fecha, confirmados.length ? conSugerencias : []);
         return {
           date: fecha,
           esHoy: fecha === hoy,
@@ -164,9 +173,11 @@ export default function Agenda() {
           bloques: [...conSugerencias, ...libres].sort(ordenarBloques),
           contexto: roundTripContext(fecha, confirmados),
           hospedaje: lodgingHint(fecha, confirmados, eventos[fechas[indice + 1]] || []),
+          horasCriticas: bienestar ? criticalHoursInEvents(confirmados) : [],
+          bloquesLargos: bienestar ? sittingAlerts(confirmados) : [],
         };
       }),
-    [fechas, eventos, clima, hoy]
+    [fechas, eventos, clima, hoy, bienestar]
   );
 
   /* ---------------- dictado ---------------- */
@@ -232,8 +243,9 @@ export default function Agenda() {
         category: sugerencia.category,
         tasks: [],
         notes: '',
-        clarification:
-          'Este traslado era solo una sugerencia. Verifica el horario real antes de agendarlo en Google.',
+        clarification: sugerencia.bienestar
+          ? 'Este bloque viene de tu plan de hábitos de la semana, no de Google. Ajústalo si quieres y confírmalo para que quede agendado.'
+          : 'Este traslado era solo una sugerencia. Verifica el horario real antes de agendarlo en Google.',
       },
     });
   };
@@ -388,6 +400,22 @@ export default function Agenda() {
         onNuevo={() => abrirNuevo()}
       />
 
+      <div className="mx-auto -mt-2 mb-2 w-full max-w-[1600px] px-4 sm:px-6">
+        <button
+          type="button"
+          onClick={() => setBienestar((v) => !v)}
+          aria-pressed={bienestar}
+          className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold transition-colors ${
+            bienestar
+              ? 'bg-fuchsia-100 text-fuchsia-700 ring-1 ring-fuchsia-200'
+              : 'bg-white text-slate-500 ring-1 ring-violet-100 hover:bg-violet-50'
+          }`}
+        >
+          <HeartPulse className="h-3.5 w-3.5" aria-hidden="true" />
+          Plan de hábitos {bienestar ? 'activo' : 'oculto'}
+        </button>
+      </div>
+
       {aviso && (
         <div className="mx-auto w-full max-w-[1600px] px-4 pb-2 sm:px-6">
           <div
@@ -422,6 +450,8 @@ export default function Agenda() {
               bloques={dia.bloques}
               contexto={dia.contexto}
               hospedaje={dia.hospedaje}
+              horasCriticas={dia.horasCriticas}
+              bloquesLargos={dia.bloquesLargos}
               onToggleTask={alternarPendiente}
               onEdit={abrirEdicion}
               onDelete={pedirEliminar}
@@ -432,6 +462,13 @@ export default function Agenda() {
           ))}
         </div>
       </main>
+
+      {bienestar && (
+        <>
+          <MetasPanel />
+          <RegistroSemana fechas={fechas} onAviso={avisar} />
+        </>
+      )}
 
       <Legend />
 

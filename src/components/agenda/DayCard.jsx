@@ -1,6 +1,7 @@
-import { Home, Info, Plus, Route } from 'lucide-react';
+import { Footprints, Home, Info, Plus, Route } from 'lucide-react';
 import EventCard from './EventCard';
-import { DIAS_LARGOS, dayAndMonth, dayNumber, weekdayOf } from '@/lib/agenda/time';
+import { horaLegible } from '@/lib/agenda/bienestar';
+import { DIAS_LARGOS, dayAndMonth, dayNumber, durationLabel, minutesToTime, weekdayOf } from '@/lib/agenda/time';
 
 /** Tarjeta de un día de la semana. */
 export default function DayCard({
@@ -11,6 +12,8 @@ export default function DayCard({
   bloques,
   contexto,
   hospedaje,
+  horasCriticas,
+  bloquesLargos,
   onToggleTask,
   onEdit,
   onDelete,
@@ -83,6 +86,39 @@ export default function DayCard({
             <strong>{contexto.label}</strong> · {contexto.detail}
           </span>
         </p>
+      )}
+
+      {bloquesLargos?.length > 0 && (
+        <div className="mb-2 rounded-xl bg-rose-50 px-2 py-1.5 text-[11px] leading-snug text-rose-700">
+          <p className="flex items-start gap-1 font-semibold">
+            <Footprints className="mt-0.5 h-3 w-3 shrink-0" aria-hidden="true" />
+            <span className="min-w-0 break-words">De corrido, sin levantarte</span>
+          </p>
+          <ul className="mt-0.5 space-y-0.5 pl-4">
+            {bloquesLargos.map((b) => (
+              <li key={b.id} className="break-words text-rose-600/90">
+                <strong>{b.titulo}</strong> · {durationLabel('00:00', minutesToTime(b.minutos))} →{' '}
+                {b.pausas} {b.pausas === 1 ? 'pausa' : 'pausas'} dentro
+                {b.conduciendo && ' (manejar también cuenta como sentada)'}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {horasCriticas?.length > 0 && (
+        <div className="mb-2 rounded-xl bg-rose-50 px-2 py-1.5 text-[11px] leading-snug text-rose-700">
+          <p className="flex items-start gap-1 font-semibold">
+            <Footprints className="mt-0.5 h-3 w-3 shrink-0" aria-hidden="true" />
+            <span className="min-w-0 break-words">
+              {horasCriticas.map((h) => horaLegible(h.hora)).join(' y ')} caen dentro de{' '}
+              {[...new Set(horasCriticas.map((h) => h.evento))].join(' / ')}
+            </span>
+          </p>
+          <p className="mt-0.5 break-words pl-4 text-rose-600/90">
+            {horasCriticas[0].nota} Son tus horas de menos movimiento.
+          </p>
+        </div>
       )}
 
       {hospedaje && (

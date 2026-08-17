@@ -1,0 +1,7 @@
+{
+  // El nombre debe ser exactamente el que usa el frontend:
+  //   base44.functions.invoke("google-calendar", datos)
+  "name": "google-calendar",
+  "entry": "entry.ts",
+  "automations": []
+}

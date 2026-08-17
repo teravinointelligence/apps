@@ -1,0 +1,17 @@
+#env
+.env
+.env.*
+
+node_modules
+dist
+dist-ssr
+*.local
+*.log
+
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+
+.vite
+base44/.app.jsonc

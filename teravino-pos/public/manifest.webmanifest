@@ -1,0 +1,14 @@
+{
+  "name": "TeraVino — Punto de venta para eventos",
+  "short_name": "TeraVino POS",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#4A1424",
+  "theme_color": "#4A1424",
+  "lang": "es-MX",
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

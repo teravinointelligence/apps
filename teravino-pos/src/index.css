@@ -1,0 +1,136 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+/* Paleta TeraVino: vino profundo + oro, sobre papel crema. Los nombres son
+   semánticos para poder ajustar la marca en un solo lugar. */
+@theme {
+  --color-wine: #4A1424;
+  --color-wine-deep: #330C18;
+  --color-wine-soft: #6B2236;
+  --color-gold: #D2B06A;
+  --color-gold-soft: #E6CF9C;
+  --color-gold-deep: #9C7A36;
+
+  --color-cream: #F8F4EE;
+  --color-cream-deep: #EFE8DD;
+  --color-paper: #FFFFFF;
+  --color-ink: #1C1714;
+  --color-ink-70: #40382F;
+  --color-ink-50: #6F665B;
+  --color-ink-30: #A79E92;
+  --color-ink-15: #D8D0C4;
+  --color-ink-08: #E9E2D6;
+  --color-ink-04: #F2ECE2;
+
+  --color-success: #3E7C55;
+  --color-success-soft: #E6F0E9;
+  --color-danger: #B54846;
+  --color-danger-soft: #F6E5E4;
+  --color-warning: #B07A28;
+  --color-warning-soft: #F7EEDC;
+
+  --color-dark-bg: #17110F;
+  --color-dark-surface: #221A17;
+  --color-dark-surface-2: #2C221E;
+  --color-dark-border: #3D302A;
+  --color-dark-ink: #F1E9DD;
+  --color-dark-ink-70: #C2B7A8;
+  --color-dark-ink-50: #8A7F72;
+
+  --font-serif: 'Cormorant Garamond', 'Times New Roman', serif;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+  width: 100%;
+  background: var(--color-cream);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.dark body,
+.dark #root {
+  background: var(--color-dark-bg);
+  color: var(--color-dark-ink);
+}
+
+@layer base {
+  * { box-sizing: border-box; }
+  button { font-family: inherit; }
+  /* 16 px evita que iOS haga zoom al enfocar un campo. */
+  input, select, textarea { font-family: inherit; font-size: 16px; }
+}
+
+@layer components {
+.num-pad-btn {
+  height: 58px;
+  border-radius: 12px;
+  border: 1px solid var(--color-ink-15);
+  background: var(--color-paper);
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--color-ink);
+  font-variant-numeric: tabular-nums;
+}
+.num-pad-btn:active { background: var(--color-ink-04); }
+.dark .num-pad-btn {
+  border-color: var(--color-dark-border);
+  background: var(--color-dark-surface);
+  color: var(--color-dark-ink);
+}
+
+.field {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--color-ink-15);
+  background: var(--color-paper);
+  color: var(--color-ink);
+  outline: none;
+}
+.field:focus { border-color: var(--color-wine); box-shadow: 0 0 0 3px rgb(74 20 36 / 0.12); }
+.dark .field {
+  border-color: var(--color-dark-border);
+  background: var(--color-dark-surface);
+  color: var(--color-dark-ink);
+}
+.dark .field:focus { border-color: var(--color-gold); box-shadow: 0 0 0 3px rgb(210 176 106 / 0.15); }
+}
+
+.tabular { font-variant-numeric: tabular-nums; }
+
+.pretty-scroll::-webkit-scrollbar { width: 8px; height: 8px; }
+.pretty-scroll::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: 4px; }
+.pretty-scroll::-webkit-scrollbar-track { background: transparent; }
+.dark .pretty-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); }
+
+/* Ticket térmico 58 mm ------------------------------------------------- */
+.ticket {
+  width: 100%;
+  max-width: 300px;
+  background: #fff;
+  color: #000;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.45;
+}
+.print-only { display: none; }
+
+@media print {
+  @page { size: 58mm auto; margin: 2mm; }
+  html, body, #root { background: #fff !important; }
+  body * { visibility: hidden; }
+  .ticket-print, .ticket-print * { visibility: visible; }
+  .ticket-print { position: absolute; left: 0; top: 0; width: 54mm; max-width: none; box-shadow: none !important; border: 0 !important; padding: 0 !important; }
+  .print-only { display: block; }
+}

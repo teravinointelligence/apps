@@ -1,5 +1,7 @@
 # Agenda Viva — *Tu tiempo, a tu manera*
 
+> Este repositorio también contiene **[`teravino-pos/`](teravino-pos/README.md)**: el punto de venta de TeraVino para eventos (Vite + Supabase del CRM), independiente de Agenda Viva.
+
 Agenda personal semanal, privada, muy visual y editable, conectada con Google
 Calendar. Construida sobre Base44 (app `6a822c0ac040ce1b15b50f1b`).
 

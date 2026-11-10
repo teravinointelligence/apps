@@ -1,8 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 @import "tailwindcss";
 
-/* Paleta TeraVino: vino profundo + oro, sobre papel crema. Los nombres son
-   semánticos para poder ajustar la marca en un solo lugar. */
+/* Paleta TeraVino: vino profundo + oro sobre fondo blanco, con grises
+   neutros para bordes y superficies secundarias. Los nombres son semánticos
+   para poder ajustar la marca en un solo lugar. */
 @theme {
   --color-wine: #4A1424;
   --color-wine-deep: #330C18;
@@ -11,16 +12,16 @@
   --color-gold-soft: #E6CF9C;
   --color-gold-deep: #9C7A36;
 
-  --color-cream: #F8F4EE;
-  --color-cream-deep: #EFE8DD;
+  --color-cream: #FFFFFF;        /* fondo de la app */
+  --color-cream-deep: #F5F5F4;
   --color-paper: #FFFFFF;
   --color-ink: #1C1714;
   --color-ink-70: #40382F;
   --color-ink-50: #6F665B;
-  --color-ink-30: #A79E92;
-  --color-ink-15: #D8D0C4;
-  --color-ink-08: #E9E2D6;
-  --color-ink-04: #F2ECE2;
+  --color-ink-30: #A8A29E;
+  --color-ink-15: #D6D3D1;
+  --color-ink-08: #E7E5E4;
+  --color-ink-04: #F5F5F4;
 
   --color-success: #3E7C55;
   --color-success-soft: #E6F0E9;

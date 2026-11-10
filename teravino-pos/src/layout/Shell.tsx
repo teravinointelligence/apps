@@ -10,6 +10,7 @@ import { useCart } from '@/store/cart'
 import { pendingClosings, pendingSales, useSales } from '@/store/sales'
 import { useOnline } from '@/lib/useOnline'
 import { syncNow } from '@/lib/sync'
+import { EventoSinPos } from '@/layout/EventoSinPos'
 
 function SyncBadge() {
   const online = useOnline()
@@ -67,17 +68,28 @@ export function Shell() {
   const loc = useLocation()
   const hideNav = loc.pathname.startsWith('/cobro') || loc.pathname.startsWith('/recibo')
 
+  // Evento cuyo punto de venta ya no existe en el servidor (se borró).
+  const [missingFor, setMissingFor] = useState<string | null>(null)
+  const missing = !!caja && missingFor === caja.event_id
+
   // El carrito pertenece a un evento; precios y stock se refrescan seguido.
+  // Se consulta al entrar (aunque haya copia guardada) para detectar a tiempo
+  // un evento eliminado.
   useEffect(() => {
     if (!caja) return
-    ensureEvent(caja.event_id)
-    if (event?.id !== caja.event_id) void load(caja.event_id).catch(() => undefined)
+    const eventId = caja.event_id
+    ensureEvent(eventId)
+    const check = () =>
+      load(eventId)
+        .then((r) => setMissingFor(r === 'missing' ? eventId : null))
+        .catch(() => undefined)
+    void check()
     const t = setInterval(() => {
-      void load(caja.event_id).catch(() => undefined)
+      void check()
       void refreshSold()
     }, 60_000)
     return () => clearInterval(t)
-  }, [caja, event?.id, load, refreshSold, ensureEvent])
+  }, [caja, load, refreshSold, ensureEvent])
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -93,7 +105,7 @@ export function Shell() {
           <SyncBadge />
           <ThemeToggle />
         </div>
-        {!hideNav && (
+        {!hideNav && !missing && (
           <nav className="px-2 md:px-5 flex gap-1">
             {tabs.map((t) => (
               <NavLink
@@ -115,7 +127,7 @@ export function Shell() {
         )}
       </header>
       <main className="flex-1 flex flex-col min-h-0">
-        <Outlet />
+        {missing ? <EventoSinPos /> : <Outlet />}
       </main>
     </div>
   )
